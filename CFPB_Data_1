@@ -1,0 +1,98 @@
+##Jessica Rippel
+
+###Date Preprocessing##############################################################
+###################################################################################
+####Convert Factors to Dates for Date Received#####################################
+Customer_Complaints_2011.2012[,9]
+datesrec <- Customer_Complaints_2011.2012[,9]
+datesrec1 <-as.Date(datesrec, format= "%m/%d/%Y") 
+datesrec1
+#####################################################################################
+####Convert Factors to Dates for Date Sent to Company################################
+Customer_Complaints_2011.2012[,10]
+datessent <- Customer_Complaints_2011.2012[,10]
+datessent1 <-as.Date(datessent, format= "%m/%d/%Y") 
+datessent1
+#####################################################################################
+####Plot date recevied vs. date sent
+
+####dates received vs. date sent
+solved <- plot(datesrec1, datessent1, main="Date Complaint was Sent to the Company", xlab= "Dates Received", ylab= "Dates sent to Company")
+summary(plot(datesrec1, datessent1, main="Date Complaint was Sent to the Company", xlab= "Dates Received", ylab= "Dates sent to Company"))
+######################################################################################
+####Visualizations####################################################################
+####Barplot for Frequency of Company Complaints########################################################
+company11 <- (Customer_Complaints_2011.2012[,11])
+tc <- table(company11)
+high.order <-order(tc, decreasing=TRUE)
+ordered<- tc[high.order]
+ordered
+barplot(ordered, main="Frequency of Company Complaints", xlab="Company ", ylab="Frequency")
+summary(barplot(ordered, main="Frequency of Company Complaints", xlab="Company ", ylab="Frequency"))
+
+####Plot for Issue Frequencies#########################################################
+issue <- (Customer_Complaints_2011.2012[,4])
+tii<-table(issue[1:2492])##significant sample size at 95% confidence interval
+high.order1 <- order(tii, decreasing=TRUE)
+ordered1 <-tii[high.order1]
+ordered1
+barplot(ordered1,main="Issue Frequencies", las=2)
+summary(barplot(ordered1,main="Issue Frequencies", las=2))
+########################################################################################
+####Using ZIP to ZTCA Crosswalk to determine Population#################################
+complaintZIP <- (Customer_Complaints_2011.2012[,7])##Call Cust. Complaint ZIP
+complaintZIP ##Return it
+crosswalk <- (Zip_to_ZCTA_Crosswalk[,5]) ## Call ZCTA crosswalk
+crosswalk ## Return it
+crosswalkZIP <- (Zip_to_ZCTA_Crosswalk[,1]) ## Call ZIP crosswalk
+crosswalkZIP ## Return it
+crosswalkedZIPZCTA <- crosswalk[match(complaintZIP,crosswalkZIP)] #match complaint ZIP and crosswalk ZIP and return ZCTA
+crosswalkedZIPZCTA ## Return ZCTA
+population <- (ZIP.Population.2008.2012.5.year.estimate[,4]) ##Call population from ZCTA Population Estimate
+population ##Return population
+ZCTAunsub <- (ZIP.Population.2008.2012.5.year.estimate[,3])##Call ZCTA full
+subZCTA <- substr(ZCTAunsub,7,11)##Extract just the ZCTA number
+subZCTA 
+populationbyZCTA <- population[match(crosswalkedZIPZCTA, subZCTA)]##Match crosswalkedZIPZCTA and subZCTZ to find population
+populationbyZCTA## Return population by ZCTA score
+poptable <- table(populationbyZCTA) ##Turn population data into a frequency table
+poptable ##Return table
+###################################################################################
+#The purpose of matching the ZIP and ZCTA scores is to match the estimated population 
+#population per region. I would use a scatterplot to determine whether the number of
+#mortgages or foreclosures per area was associated with the number of complaints in each region
+#according to the same issue. The response variable would be the number of complaints per area
+#and the explanitory variable would be the number of mortgages or foreclosures per that area. 
+#The null hypothesis would assume that the number of mortgages or foreclosures has no 
+#affect on the complaint data per region. The alternative hypothesis would then
+#show the association between the two variables.I would need additional data that
+#contained mortgages or foreclosures per ZIP area. I think that this analysis is feasible, though the ZCTA and ZIP crosswalk may not be nearly as
+#accurate as a ZIP to ZIP join, which uses estimated populations over several years as opposed
+#to a yearly population survey. 
+##################################################################################
+####Submission Frequency by Type of Submission#####################################
+submission <- Customer_Complaints_2011.2012[,8]
+sub <- table(submission)
+high.order <-order(sub, decreasing=TRUE)
+ordered<- sub[high.order]
+ordered
+barplot(ordered, main="Submission Frequency Type", xlab="Submission ", ylab="Frequency") 
+summary(barplot(ordered, main="Submission Frequency Type", xlab="Submission ", ylab="Frequency"))
+############################################################################################
+####Frequency of Issue######################################################################
+ti <- table(issue[1:2492])##significant sample size at 95% confidence interval
+high.order <-order(ti, decreasing=TRUE)
+ordered<- ti[high.order]
+ordered
+barplot(ordered, main="Frequency of Issue", xlab="Issue ", ylab="Frequency", las=2) 
+#############################################################################################
+####Products Complaints###############################################################
+slice <- Customer_Complaints_2011.2012[,2]
+tz <- table(slice)
+tz
+lbls <- c("Bank Account or Service", "Credit Card", "Mortgage", "Consumer Loan", "Credit Reporting", "Student Loan")
+pct <- round(tz/sum(tz)*100)
+lbls <- paste(lbls, pct) # add percents to labels
+lbls <- paste(lbls,"%",sep="") # ad % to labels 
+pie(tz, labels = lbls, col=rainbow(length(lbls)), main="Pie Chart of Product Complaints")
+##########################################################################################

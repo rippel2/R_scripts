@@ -1,0 +1,51 @@
+###Jessica Rippel##
+###11/4/2014####
+###Supporting files: Customer_Complaints_2011.2012, ACS12, ACS11, ACSComb
+###The new ACS files are mortgages filed per state per 2011 and 2012
+####Bind 2011 and 2012 Total mortgages per state#######
+mort11<- ACS11[,2]
+summary(mort11)
+mort12<- ACS12[,2]
+summary(mort12)
+mortbind<- cbind(mort11,mort12)
+mortbind
+sumrowmort<- rowSums(mortbind) ## sum across the rows to get state totals
+sumrowmort ## view state totals 1-52 (including PR and DC) 
+sum(sumrowmort) ##Total sum of mortgages
+boxplot(sumrowmort, (sum(sumrowmort))) ###Box plot of state mortgage totals vs. total sum of mortgages
+########################################################
+astate<- Customer_Complaints_2011.2012[,6]
+product <-Customer_Complaints_2011.2012[,2]
+boxplot(product,state)
+tproduct<-table(product)
+tproduct ##Total Mortgage complaints = 39505
+barplot(tproduct) #############Mortgage highest reported service barplot#########
+hist(tproduct)################Histogram of product complaint distribution#######
+
+
+boxpro <- Customer_Complaints_2011.2012
+boxplot(boxpro$Product~boxpro$State)##Messy boxplot of product complaints by state 2011-2012
+
+charm <-as.character(boxpro$Product)##Convert level data into character data
+charm
+
+gcharm <-length(grep("Mortgage", charm)) ##total occurrences of "Mortgage" in Product category
+gcharm
+
+###############################################################################################
+##########Plots!############################################################################
+plot(boxpro$Product~boxpro$State) ##Plot of Products by State from the CFPB Data
+ACSPlot<-plot(ACS11,ACS12) #####Scatter plot of ACS mortgage by state data 2011-2012
+plot(boxpro$Product~boxpro$State, mortbind, xlab= "State", ylab= "Product") 
+##Plots of Product complaints by state and mortgages by state 
+
+###Test with a different excel file that has state totals in a column
+statecomp<- ACSComb$State
+morttot<-ACSComb$Mortgagetot
+statebind <-cbind(statecomp, morttot)
+statebind
+plot(boxpro$Product~boxpro$State, statebind, xlab= "State", ylab= "Product")
+######################This appears to be more successful, however, I'm not sure where to read statebind's 
+######################information in this. There are light gray caps that I think indicate state total 
+######################mortgages per year and then the top most must indicate the total number of mortgages 
+#######################filed? 
